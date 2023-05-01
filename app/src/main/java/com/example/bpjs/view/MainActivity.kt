@@ -28,8 +28,10 @@ class MainActivity : AppCompatActivity() {
         _bindng = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        getPopularMovie()
         getGenre()
+        viewModel.getPopulerMovie()
+        getMoviePopular()
+
         setupRecyclerView()
 
         adapter?.onClickListenerMovie(object : OnMovieClickListener{
@@ -49,20 +51,52 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
             rvMovie.adapter = adapter
             rvMovie.layoutManager = layoutManager
+            rvMovie.addOnScrollListener(scrollListener)
 
 
         }
     }
-    private fun getPopularMovie(){
+
+    private val scrollListener = object : RecyclerView.OnScrollListener(){
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            if(!recyclerView.canScrollVertically(1)){
+                viewModel.getPopulerMovie()
+            }
+        }
+    }
+//    private fun getPopularMovie(){
+//
+//        viewModel = ViewModelProvider(this)[MovieViewModel::class.java]
+//        viewModel.getPopulerMovie().observe(this){
+//            if (it != null){
+//                when(it){
+//                    is RequestState.Loading -> showLoading()
+//                    is RequestState.Success -> {
+//                        hideLoading()
+//                        it.data?.results?.let { data -> adapter?.setMovies(data) }
+//                    }
+//                    is RequestState.Error -> {
+//                        hideLoading()
+//                        Toast.makeText(this,it.message, Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+
+    private fun getMoviePopular(){
 
         viewModel = ViewModelProvider(this)[MovieViewModel::class.java]
-        viewModel.getPopulerMovie().observe(this){
+        viewModel.populerResponse.observe(this){
             if (it != null){
                 when(it){
                     is RequestState.Loading -> showLoading()
                     is RequestState.Success -> {
                         hideLoading()
-                        it.data?.results?.let { data -> adapter?.setMovies(data) }
+//                        it.data?.results?.let { data -> adapter?.setMovies(data) }
+                        it.data?.results?.let { data -> adapter?.differ?.submitList(data.toList()) }
                     }
                     is RequestState.Error -> {
                         hideLoading()

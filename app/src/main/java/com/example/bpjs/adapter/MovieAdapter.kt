@@ -2,6 +2,8 @@ package com.example.bpjs.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bpjs.Constant
@@ -11,7 +13,7 @@ import com.example.bpjs.model.GenresItem
 import com.example.movie.model.MovieItem
 
 class MovieAdapter:RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
-    private val movieList = ArrayList<MovieItem>()
+//    private val movieList = ArrayList<MovieItem>()
     private val genreList = ArrayList<GenresItem>()
     private lateinit var onClickMovieListener:OnMovieClickListener
 
@@ -19,11 +21,11 @@ class MovieAdapter:RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
         this.onClickMovieListener = onClickListener
     }
 
-    fun setMovies(list:List<MovieItem>){
-        this.movieList.clear()
-        this.movieList.addAll(list)
-        notifyDataSetChanged()
-    }
+//    fun setMovies(list:List<MovieItem>){
+//        this.movieList.clear()
+//        this.movieList.addAll(list)
+//        notifyDataSetChanged()
+//    }
 
     fun setGenres(list:List<GenresItem>){
         this.genreList.clear()
@@ -31,7 +33,12 @@ class MovieAdapter:RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
+    private val differCallback = object :DiffUtil.ItemCallback<MovieItem>(){
+        override fun areItemsTheSame(oldItem: MovieItem, newItem: MovieItem): Boolean = oldItem == newItem
+        override fun areContentsTheSame(oldItem: MovieItem, newItem: MovieItem): Boolean = oldItem == newItem
+    }
 
+    val differ = AsyncListDiffer(this,differCallback)
     inner class ViewHolder(val binding:ItemListMovieBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,14 +46,14 @@ class MovieAdapter:RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
         return ViewHolder(bindng)
     }
 
-    override fun getItemCount(): Int  = movieList.size
+    override fun getItemCount(): Int  = differ.currentList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with(holder){
-            with(movieList[position]){
+            with(differ.currentList[position]){
                 binding.apply {
                     tvTitle.text = title
-                    tvReleaseDate.text = movieList[position].releaseDate
+                    tvReleaseDate.text = differ.currentList[position].releaseDate
                     ratingText.text = voteAverage.toString()
                     ratbarImg.rating = voteAverage?.div(2) ?: 0f
 
