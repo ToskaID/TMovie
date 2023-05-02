@@ -20,9 +20,14 @@ class MovieViewModel : ViewModel() {
     private val repo : MovieRepository = MovieRepository()
 //    private var page =1
     private var popularPage =1
-    private var _populerResponse = MutableLiveData<RequestState<MovieResponse?>>()
-    var populerResponse:LiveData<RequestState<MovieResponse?>> = _populerResponse   
+    private var searchPage =1
     private var populerMovieResponse:MovieResponse? = null
+    private var searchMovieResponse:MovieResponse? = null
+    private var _populerResponse = MutableLiveData<RequestState<MovieResponse?>>()
+    private var _searchResponse = MutableLiveData<RequestState<MovieResponse?>>()
+    var populerResponse:LiveData<RequestState<MovieResponse?>> = _populerResponse
+    var searchResponse:LiveData<RequestState<MovieResponse?>> = _searchResponse
+
 
 
 //        fun getPopulerMovie() : LiveData<RequestState<MovieResponse>> = liveData {
@@ -57,6 +62,38 @@ class MovieViewModel : ViewModel() {
             }
 
             RequestState.Success(populerMovieResponse ?: response.body())
+        }else RequestState.Error(
+            try{
+                response.errorBody()?.string()?.let{
+                    JSONObject(it).get("status_message")
+                }
+            }catch (e: JSONException){
+                e.localizedMessage
+            }as String
+        )
+    }
+
+    fun seacrhQuery(query:String)  {
+        viewModelScope.launch {
+            _searchResponse.postValue(RequestState.Loading)
+            val response = repo.searchQuery(query,searchPage)
+            _searchResponse.postValue(handlePopulerMovieResponse(response))
+        }
+    }
+
+    private fun seacrhQueryResponse(response: Response<MovieResponse>): RequestState<MovieResponse?>? {
+
+        return if(response.isSuccessful){
+            response.body()?.let {
+                searchPage++
+                if (searchMovieResponse == null) searchMovieResponse = it else {
+                    val oldMovies = searchMovieResponse?.results
+                    val newMovies = it.results
+                    oldMovies?.addAll(newMovies)
+                }
+            }
+
+            RequestState.Success(searchMovieResponse ?: response.body())
         }else RequestState.Error(
             try{
                 response.errorBody()?.string()?.let{

@@ -16,6 +16,7 @@ class DetailActivity : AppCompatActivity() {
     companion object{
         const val movie = "movie"
         const val genres = "genres"
+
     }
     private var _bindng : ActivityDetailBinding? = null
     private val binding get() = _bindng!!

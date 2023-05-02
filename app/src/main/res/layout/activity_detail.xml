@@ -31,77 +31,86 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/titleDetail"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:layout_toStartOf="@+id/releaseDateDetail"
+                    android:layout_marginStart="20dp"
                     android:fontFamily="@font/product_sans_bold"
                     android:textColor="@color/white"
-                    android:textSize="28sp"
-                    tools:text="Title"/>
+                    android:textSize="18sp"
+                    tools:text="Title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <TextView
                     android:id="@+id/releaseDateDetail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginTop="28dp"
-                    android:layout_marginEnd="30dp"
-                    android:fontFamily="@font/product_sans_medium"
-                    tools:text="Release Date"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/genreDetail"
-                    android:layout_below="@+id/titleDetail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginEnd="30dp"
+                    android:layout_marginEnd="20dp"
                     android:fontFamily="@font/product_sans_medium"
                     android:textColor="@color/white"
                     android:textSize="18sp"
-                    tools:text="Genres"/>
+                    app:layout_constraintBottom_toBottomOf="@+id/titleDetail"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/titleDetail"
+                    tools:text="Release Date" />
+
+                <TextView
+                    android:id="@+id/genreDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="30dp"
+                    android:fontFamily="@font/product_sans_medium"
+
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    tools:text="Genres"
+                    app:layout_constraintTop_toBottomOf="@+id/titleDetail"
+                    app:layout_constraintStart_toStartOf="parent"/>
 
                 <RatingBar
                     android:id="@+id/ratingBar"
                     style="?android:attr/ratingBarStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginEnd="6dp"
                     android:layout_below="@+id/releaseDateDetail"
-                    android:layout_toStartOf="@+id/ratingText"
                     android:isIndicator="true"
                     android:numStars="5"
                     android:progressBackgroundTint="@color/yellow"
                     android:progressTint="@color/yellow"
                     android:rating="4.5"
                     android:secondaryProgressTint="@color/yellow"
-                    android:stepSize="0.1" />
+                    android:stepSize="0.1"
+                    app:layout_constraintStart_toEndOf="@+id/overviewTitle"
+                    app:layout_constraintTop_toTopOf="@+id/overviewTitle"
+                    app:layout_constraintBottom_toBottomOf="@+id/overviewTitle"/>
 
                 <TextView
                     android:id="@+id/ratingText"
                     android:layout_below="@+id/releaseDateDetail"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/product_sans_bold"
                     android:textSize="14sp"
                     android:textColor="@color/white"
-                    tools:text="4.5"/>
+                    tools:text="4.5"
+                    app:layout_constraintTop_toTopOf="@+id/ratingBar"
+                    app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
+                    app:layout_constraintStart_toEndOf="@+id/ratingBar"/>
 
                 <TextView
                     android:id="@+id/overviewTitle"
@@ -109,12 +118,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:layout_marginStart="30dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="30dp"
                     android:fontFamily="@font/product_sans_bold"
                     android:textColor="@color/white"
                     android:textSize="18sp"
-                    android:text="Overview"/>
+                    android:text="Overview"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/genreDetail"/>
 
                 <TextView
                     android:id="@+id/overview"
@@ -123,14 +134,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="80dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginStart="30dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="30dp"
                     android:fontFamily="@font/product_sans_regular"
                     android:textColor="@color/white"
                     android:textSize="14sp"
-                    tools:text="overview"/>
-
-            </RelativeLayout>
+                    tools:text="overview"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/overviewTitle"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 

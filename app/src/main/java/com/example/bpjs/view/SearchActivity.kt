@@ -6,55 +6,59 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.bpjs.R
 import com.example.bpjs.adapter.MovieAdapter
-import com.example.bpjs.databinding.ActivityMainBinding
+import com.example.bpjs.databinding.ActivitySearchBinding
 import com.example.bpjs.listener.OnMovieClickListener
 import com.example.bpjs.network.RequestState
 import com.example.bpjs.viewmodel.MovieViewModel
 import com.example.movie.model.MovieItem
 
-class MainActivity : AppCompatActivity() {
-
-    private var _bindng :ActivityMainBinding? = null
+class SearchActivity : AppCompatActivity() {
+    companion object{
+        const val query = "query"
+    }
+    private var _bindng :ActivitySearchBinding? = null
     private val binding get() = _bindng!!
-    private var adapter:MovieAdapter? = null
+
+    private var isSearchAgain = false
+    private var adapter: MovieAdapter? = null
     private var layoutManager : RecyclerView.LayoutManager? = null
     private lateinit var viewModel: MovieViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _bindng = ActivityMainBinding.inflate(layoutInflater)
+        _bindng = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        getGenre()
-        viewModel.getPopulerMovie()
-        getMoviePopular()
-
-        setupRecyclerView()
-
-        adapter?.onClickListenerMovie(object : OnMovieClickListener{
-            override fun onClickMovieListener(movies: MovieItem, genres: String) {
-                val intent = Intent(this@MainActivity, DetailActivity::class.java)
-                intent.putExtra(DetailActivity.movie, movies)
-                intent.putExtra(DetailActivity.genres, genres)
-                startActivity(intent)
-            }
-
-        })
+        binding.search.setText(intent.getStringExtra(query))
+        viewModel = ViewModelProvider(this)[MovieViewModel::class.java]
+        if(!isSearchAgain) viewModel.seacrhQuery(binding.search.text.toString())
 
         binding.searchButton.setOnClickListener {
             val query = binding.search.text.toString()
             when {
                 query.isEmpty() -> binding.search.error = "please insert keywoard"
                 else->{
-                    val intent = Intent(this,SearchActivity::class.java)
-                    intent.putExtra(SearchActivity.query,query)
-                    startActivity(intent)
+                    isSearchAgain  = true
+                    viewModel.seacrhQuery(query)
                 }
             }
         }
+        getGenre()
+        searchQuery()
+
+        setupRecyclerView()
+
+        adapter?.onClickListenerMovie(object : OnMovieClickListener {
+            override fun onClickMovieListener(movies: MovieItem, genres: String) {
+                val intent = Intent(this@SearchActivity, DetailActivity::class.java)
+                intent.putExtra(DetailActivity.movie, movies)
+                intent.putExtra(DetailActivity.genres, genres)
+                startActivity(intent)
+            }
+
+        })
     }
 
     private fun setupRecyclerView(){
@@ -73,35 +77,15 @@ class MainActivity : AppCompatActivity() {
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             super.onScrollStateChanged(recyclerView, newState)
             if(!recyclerView.canScrollVertically(1)){
-                viewModel.getPopulerMovie()
+                viewModel.seacrhQuery(binding.search.text.toString())
             }
         }
     }
-//    private fun getPopularMovie(){
-//
-//        viewModel = ViewModelProvider(this)[MovieViewModel::class.java]
-//        viewModel.getPopulerMovie().observe(this){
-//            if (it != null){
-//                when(it){
-//                    is RequestState.Loading -> showLoading()
-//                    is RequestState.Success -> {
-//                        hideLoading()
-//                        it.data?.results?.let { data -> adapter?.setMovies(data) }
-//                    }
-//                    is RequestState.Error -> {
-//                        hideLoading()
-//                        Toast.makeText(this,it.message, Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-//            }
-//        }
-//    }
 
-
-    private fun getMoviePopular(){
+    private fun searchQuery(){
 
         viewModel = ViewModelProvider(this)[MovieViewModel::class.java]
-        viewModel.populerResponse.observe(this){
+        viewModel.searchResponse.observe(this){
             if (it != null){
                 when(it){
                     is RequestState.Loading -> showLoading()
@@ -135,7 +119,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun showLoading(){
         binding.loading.show()
     }
@@ -144,7 +127,4 @@ class MainActivity : AppCompatActivity() {
     private fun hideLoading(){
         binding.loading.hide()
     }
-
-
-
 }
